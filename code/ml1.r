@@ -308,3 +308,30 @@ sal_tune <- tune_grid(
     control=control_grid(verbose=TRUE)
 )
 toc()
+
+sal_tune
+sal_tune$.metrics[[1]]
+sal_tune$.metrics[[2]]
+autoplot(sal_tune)
+
+sal_tune %>% collect_metrics()
+show_best(sal_tune, metric='mae', maximize=FALSE, n_top=2)
+
+sal_best <- select_best(sal_tune, metric='mae', maximize=FALSE)
+sal_best
+
+sal_best_mod <- finalize_model(x=spec_xg, parameters=sal_best)
+sal_best_mod
+sal_best_rec <- finalize_recipe(x=sal_rec, parameters=sal_best)
+sal_best_rec
+
+library(workflows)
+
+sal_flow <- workflow() %>% 
+    add_recipe(sal_best_rec) %>% 
+    add_model(sal_best_mod)
+sal_flow
+
+sal_final <- sal_flow %>% 
+    fit(data=train)
+sal_final
