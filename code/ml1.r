@@ -35,3 +35,17 @@ ggplot(train, aes(x=SalaryCY, fill=Title)) +
 
 # Linear Models ####
 
+# y ~ x
+# outcome ~ input
+# response ~ predictor
+# label ~ data
+
+# Output: outcome, y, response, label, target
+# Input: x, features, data, covariates, predictors
+sal1 <- lm(SalaryCY ~ Region + Title + Years + Reports + Career + Floor,
+           data=train)
+sal1
+summary(sal1)
+
+library(coefplot)
+coefplot(sal1, sort='magnitude')
