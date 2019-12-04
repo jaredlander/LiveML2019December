@@ -122,3 +122,26 @@ plot(sal5, xvar='lambda')
 plot(sal5, xvar='lambda', label=TRUE)
 
 coefpath(sal5)
+coefplot(sal5, sort='magnitude', lambda=exp(-6))
+coefplot(sal5, sort='magnitude', lambda=exp(-10))
+coefplot(sal5, sort='magnitude', lambda=exp(-2))
+
+sal6 <- cv.glmnet(x=sal_x, y=sal_y,
+                  family='gaussian', alpha=1,
+                  standardize=FALSE,
+                  nfolds=10)
+plot(sal6)
+
+coefplot(sal6, sort='magnitude', lambda='lambda.min')
+
+sal7 <- cv.glmnet(x=sal_x, y=sal_y,
+                  family='gaussian', alpha=0,
+                  standardize=FALSE,
+                  nfolds=10)
+coefpath(sal7)
+
+sal8 <- cv.glmnet(x=sal_x, y=sal_y,
+                  family='gaussian', alpha=0.5,
+                  standardize=FALSE,
+                  nfolds=10)
+coefpath(sal8)
