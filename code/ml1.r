@@ -97,3 +97,7 @@ sal_train
 
 sal4 <- lm(SalaryCY ~ ., data=sal_train)
 coefplot(sal4, sort='magnitude')
+
+multiplot(sal3, sal4, sort='magnitude', single=FALSE)
+multiplot(sal3, sal4, sort='magnitude', single=TRUE, intercept=FALSE) + 
+    facet_wrap(~Model, ncol=2, scales='free_y')
