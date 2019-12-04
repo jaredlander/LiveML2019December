@@ -285,7 +285,7 @@ library(tune)
 sal_params <- spec_xg %>% 
     parameters() %>% 
     update(
-        trees=trees(range=c(20,300)),
+        trees=trees(range=c(20, 300)),
         tree_depth=tree_depth(range=c(2, 5))
     )
 sal_params
@@ -299,5 +299,12 @@ tic()
 toc()
 
 tic()
-
+sal_tune <- tune_grid(
+    object=sal_rec,
+    model=spec_xg,
+    resamples=sal_cv,
+    grid=sal_param_grid,
+    metrics=sal_metrics,
+    control=control_grid(verbose=TRUE)
+)
 toc()
