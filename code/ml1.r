@@ -101,3 +101,24 @@ coefplot(sal4, sort='magnitude')
 multiplot(sal3, sal4, sort='magnitude', single=FALSE)
 multiplot(sal3, sal4, sort='magnitude', single=TRUE, intercept=FALSE) + 
     facet_wrap(~Model, ncol=2, scales='free_y')
+
+# glmnet ####
+
+library(glmnet)
+
+# lm: data.frame/tibble: lm(y ~ x, data=data.frame)
+# glmnet: x/y matrices: glmnet(x=x_matrix, y=y_matrix)
+
+sal_prepped
+sal_x <- sal_prepped %>% juice(all_predictors(), composition='matrix')
+head(sal_x)
+sal_y <- sal_prepped %>% juice(SalaryCY, composition='matrix')
+head(sal_y)
+
+sal5 <- glmnet(x=sal_x, y=sal_y, family='gaussian', alpha=1, standardize=FALSE)
+sal5 %>% coef() %>% as.matrix() %>% View()
+
+plot(sal5, xvar='lambda')
+plot(sal5, xvar='lambda', label=TRUE)
+
+coefpath(sal5)
