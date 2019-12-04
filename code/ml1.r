@@ -88,3 +88,12 @@ sal_rec <- recipe(SalaryCY ~ Region + Title + Years + Reports + Career + Floor,
     step_normalize(all_numeric(), -SalaryCY) %>% 
     step_other(all_nominal(), other='Misc') %>% 
     step_dummy(all_nominal())
+
+sal_prepped <- sal_rec %>% prep()
+sal_prepped
+
+sal_train <- sal_prepped %>% juice()
+sal_train
+
+sal4 <- lm(SalaryCY ~ ., data=sal_train)
+coefplot(sal4, sort='magnitude')
