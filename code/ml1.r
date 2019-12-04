@@ -158,6 +158,8 @@ head(sal_preds_8)
 # glmnet(x, y)
 # xgb.train(xgb.DMatrix(x, y))
 
+# Model Specifications ####
+
 library(parsnip)
 
 spec_lm <- linear_reg() %>% 
@@ -183,3 +185,55 @@ logistic_reg() %>% set_engine('glmnet')
 
 boost_tree(mode='regression') %>% set_engine('xgboost')
 boost_tree(mode='classification') %>% set_engine('xgboost')
+
+# Decision Trees ####
+
+library(xgboost)
+test_y <- sal_prepped %>% 
+    bake(SalaryCY, new_data=test, composition='matrix')
+head(test_y)
+
+train_xg <- xgb.DMatrix(data=sal_x, label=sal_y)
+# DON'T USE TEST DATA AS VALIDATION DATA
+# WE'RE JUST DOING IT OUT OF LAZINESS AND TIME CONSTRAINTS
+val_xg <- xgb.DMatrix(data=test_x, label=test_y)
+
+sal11 <- xgb.train(
+    data=train_xg,
+    objective='reg:squarederror',
+    booster='gbtree',
+    eval_metric='rmse',
+    nrounds=1,
+    watchlist=list(train=train_xg)
+)
+
+sal8$cvm[which(sal8$lambda == sal8$lambda.min)]
+
+
+sal12 <- xgb.train(
+    data=train_xg,
+    objective='reg:squarederror',
+    booster='gbtree',
+    eval_metric='rmse',
+    nrounds=100,
+    watchlist=list(train=train_xg)
+)
+
+sal13 <- xgb.train(
+    data=train_xg,
+    objective='reg:squarederror',
+    booster='gbtree',
+    eval_metric='rmse',
+    nrounds=500,
+    watchlist=list(train=train_xg)
+)
+
+sal14 <- xgb.train(
+    data=train_xg,
+    objective='reg:squarederror',
+    booster='gbtree',
+    eval_metric='rmse',
+    nrounds=500,
+    watchlist=list(train=train_xg, validate=val_xg)
+)
+sal14$evaluation_log %>% dygraphs::dygraph()
