@@ -335,3 +335,17 @@ sal_flow
 sal_final <- sal_flow %>% 
     fit(data=train)
 sal_final
+
+sal_preds <- sal_final %>% 
+    predict(new_data=test)
+sal_preds
+sal_preds <- sal_preds %>% 
+    bind_cols(test %>% select(SalaryCY))
+sal_preds
+
+ggplot(sal_preds, aes(x=SalaryCY, y=.pred)) + 
+    geom_point(shape=1, size=1, alpha=1/3) +
+    geom_smooth() + 
+    theme_minimal()
+
+sal_metrics(sal_preds, truth=SalaryCY, estimate=.pred)
