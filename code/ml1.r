@@ -237,3 +237,67 @@ sal14 <- xgb.train(
     watchlist=list(train=train_xg, validate=val_xg)
 )
 sal14$evaluation_log %>% dygraphs::dygraph()
+
+
+sal15 <- xgb.train(
+    data=train_xg,
+    objective='reg:squarederror',
+    booster='gbtree',
+    eval_metric='rmse',
+    nrounds=500,
+    max_depth=3,
+    watchlist=list(train=train_xg, validate=val_xg)
+)
+
+sal15$evaluation_log$validate_rmse %>% min
+sal14$evaluation_log$validate_rmse %>% min
+
+# workflows ####
+
+# rsample
+sal_cv <- vfold_cv(data=train, v=5, strata='SalaryCY')
+sal_cv
+
+library(yardstick)
+sal_metrics <- metric_set(rmse, mae)
+sal_metrics
+
+# recipes
+sal_rec <- recipe(SalaryCY ~ Region + Title + Years + Reports + Career + Floor,
+                  data=train) %>% 
+    step_nzv(all_predictors()) %>% 
+    step_BoxCox(all_numeric(), -SalaryCY) %>% 
+    step_other(all_nominal(), other='Misc') %>% 
+    step_dummy(all_nominal(), one_hot=TRUE)
+
+# parsnip
+spec_xg <- boost_tree(
+    mode='regression',
+    learn_rate=0.3,
+    trees=tune(),
+    tree_depth=tune()
+) %>% 
+    set_engine('xgboost')
+spec_xg
+
+library(dials)
+library(tune)
+sal_params <- spec_xg %>% 
+    parameters() %>% 
+    update(
+        trees=trees(range=c(20,300)),
+        tree_depth=tree_depth(range=c(2, 5))
+    )
+sal_params
+sal_param_grid <- grid_max_entropy(sal_params, size=6)
+sal_param_grid
+
+library(tictoc)
+
+tic()
+1 - 1
+toc()
+
+tic()
+
+toc()
