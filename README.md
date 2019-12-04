@@ -3,7 +3,7 @@
 
 # R Class
 
-This is an empty repo to initialize an R project for class at by
+This is an empty repo to initialize an R project for class by
 [O’Reilly](https://www.oreilly.com/live-training/courses/machine-learning-with-the-tidyverse-in-r/0636920326045/).
 
 Please **follow all instructions** to set up your environment for the
@@ -19,7 +19,7 @@ This is just like installing any other program.
 # Getting the Repo
 
 In order to get the most out of class you have to be working in this
-project.
+[project](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects).
 
 ## `usethis` Package
 
