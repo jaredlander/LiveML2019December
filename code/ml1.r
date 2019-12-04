@@ -49,3 +49,42 @@ summary(sal1)
 
 library(coefplot)
 coefplot(sal1, sort='magnitude')
+plotly::ggplotly(coefplot(sal1, sort='magnitude'))
+
+
+sal2 <- lm(SalaryCY ~ Region + Title + Years + Reports + Career + Floor,
+           data=train,
+           subset=Title != 'MD')
+coefplot(sal2, sort='magnitude')
+
+
+sal3 <- lm(log10(SalaryCY) ~ Region + Title + scale(Years) + scale(Reports) + 
+               Career + scale(Floor),
+           data=train)
+coefplot(sal3, sort='magnitude')
+
+ggplot(train, aes(x=Years, fill=Title)) + 
+    geom_histogram()
+
+ggplot(train, aes(x=Reports, fill=Title)) + 
+    geom_histogram()
+
+ggplot(train, aes(x=Floor, fill=Title)) + 
+    geom_histogram()
+
+# Feature Engineering ####
+
+library(recipes)
+
+sal_rec <- recipe(SalaryCY ~ Region + Title + Years + Reports + Career + Floor, 
+       data=train) %>% 
+    step_log(SalaryCY, base=10) %>% 
+    step_zv(all_predictors()) %>% 
+    step_nzv(all_predictors()) %>% 
+    step_knnimpute(all_predictors()) %>% 
+    step_BoxCox(all_numeric(), -SalaryCY) %>% 
+    # step_center(all_numeric(), -SalaryCY) %>% 
+    # step_scale(all_numeric(), -SalaryCY) %>% 
+    step_normalize(all_numeric(), -SalaryCY) %>% 
+    step_other(all_nominal(), other='Misc') %>% 
+    step_dummy(all_nominal())
