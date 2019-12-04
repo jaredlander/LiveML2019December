@@ -145,3 +145,41 @@ sal8 <- cv.glmnet(x=sal_x, y=sal_y,
                   standardize=FALSE,
                   nfolds=10)
 coefpath(sal8)
+
+test_x <- sal_prepped %>% 
+    bake(all_predictors(), new_data=test, composition='matrix')
+class(test_x)
+head(test_x)
+
+sal_preds_8 <- predict(sal8, newx=test_x, s='lambda.min')
+head(sal_preds_8)
+
+# lm(y ~ x, data)
+# glmnet(x, y)
+# xgb.train(xgb.DMatrix(x, y))
+
+library(parsnip)
+
+spec_lm <- linear_reg() %>% 
+    set_engine('lm')
+spec_lm
+sal9 <- spec_lm %>% fit(SalaryCY ~ ., data=sal_train)
+sal9
+
+spec_glmnet <- linear_reg() %>% 
+    set_engine('glmnet')
+sal10 <- spec_glmnet %>% fit(SalaryCY ~ ., data=sal_train)
+sal10
+
+sal9 <- spec_lm %>% fit(SalaryCY ~ ., data=sal_train)
+sal10 <- spec_glmnet %>% fit(SalaryCY ~ ., data=sal_train)
+
+# linear_reg() %>% set_engine('stan') %>% fit(SalaryCY ~ ., data=sal_train)
+# linear_reg() %>% set_engine('spark') %>% fit(SalaryCY ~ ., data=sal_train)
+# linear_reg() %>% set_engine('keras') %>% fit(SalaryCY ~ ., data=sal_train)
+ 
+logistic_reg() %>% set_engine('glm')
+logistic_reg() %>% set_engine('glmnet')
+
+boost_tree(mode='regression') %>% set_engine('xgboost')
+boost_tree(mode='classification') %>% set_engine('xgboost')
